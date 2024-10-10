@@ -1,4 +1,5 @@
 @import './base.css';
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
 #app {
   max-width: 1280px;
@@ -7,29 +8,32 @@
   font-weight: normal;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  font-family: 'Montserrat', 'sans-serif';
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  margin: 0;
+  color: white;
+  background-color: #151515;
+  height: 100vh;
 }
 
-@media (hover: hover) {
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
   a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+    color: #747bff;
   }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+  button {
+    background-color: #f9f9f9;
   }
 }
