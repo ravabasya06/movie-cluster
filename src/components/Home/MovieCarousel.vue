@@ -1,39 +1,40 @@
 <script setup>
-// import { onMounted, ref } from "vue";
-// import { Splide, SplideSlide, SplideTrack } from "@splidejs/vue-splide";
-// import "@splidejs/vue-splide/css";
-// import MovieModal from "./MovieModal.vue";
-// defineProps([
-//     "title1",
-//     "movies1",
-//     "title2",
-//     "movies2",
-//     "title3",
-//     "movies3",
-//     "title4",
-//     "movies4",
-//     "title5",
-//     "movies5",
-// ]);
+import { onMounted, ref } from 'vue'
+import { Splide, SplideSlide, SplideTrack } from '@splidejs/vue-splide'
+import '@splidejs/vue-splide/css'
+import MovieModal from './MovieModal.vue'
 
-// let Movie;
-// const selectedMovie = ref("");
+defineProps([
+  'title1',
+  'movies1',
+  'title2',
+  'movies2',
+  'title3',
+  'movies3',
+  'title4',
+  'movies4',
+  'title5',
+  'movies5'
+])
 
-// onMounted(() => {
-//     const MovieModalElement = document.getElementById("moviepopup");
-//     if (MovieModalElement) {
-//         Movie = new bootstrap.Modal(MovieModalElement);
-//     }
-// });
+let Movie
+const selectedMovie = ref('')
 
-// const showmovie = (themovie) => {
-//     selectedMovie.value = themovie;
-//     Movie.show();
-// };
+onMounted(() => {
+  const MovieModalElement = document.getElementById('moviepopup')
+  if (MovieModalElement) {
+    Movie = new bootstrap.Modal(MovieModalElement)
+  }
+})
+
+const showmovie = (themovie) => {
+  selectedMovie.value = themovie
+  Movie.show()
+}
 </script>
 <template>
   <div>
-    <!-- <h1 class="title">{{ title1 }}</h1> -->
+    <h1 class="title">{{ title1 }}</h1>
     <Splide
       :options="{
         rewind: true,

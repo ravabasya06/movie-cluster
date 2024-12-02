@@ -1,7 +1,7 @@
 <script setup>
-import Layout from '../Components/Layout.vue'
-import MovieCarousel from '../Components/Home/MovieCarousel.vue'
-import CastCarousel from '../Components/Movie/CastCarousel.vue'
+import Layout from '../components/TheLayout.vue'
+import MovieCarousel from '../components/Home/MovieCarousel.vue'
+import CastCarousel from '../components/Movie/CastCarousel.vue'
 defineProps(['movie', 'release_date', 'recommendation_movies', 'casts'])
 </script>
 

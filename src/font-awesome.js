@@ -6,10 +6,11 @@ import {
   faMagnifyingGlass,
   faThumbsUp,
   faPlay,
-  faStar,
   faFire,
   faFolderOpen
 } from '@fortawesome/free-solid-svg-icons'
+
+import { faStar } from '@fortawesome/free-regular-svg-icons'
 
 library.add(faMagnifyingGlass, faThumbsUp, faPlay, faStar, faFire, faFolderOpen)
 

@@ -1,20 +1,7 @@
 <script setup>
-// import { onMounted, ref } from "vue";
-// const selectedMovie = ref("");
-// let Movie;
+import { RouterLink } from 'vue-router'
 
-// onMounted(() => {
-//     const MovieModalElement = document.getElementById("moviepopup");
-//     if (MovieModalElement) {
-//         Movie = new bootstrap.Modal(MovieModalElement);
-//     }
-// });
-
-// const hidemovie = (themovie) => {
-//     selectedMovie.value = themovie;
-//     Movie.hide();
-// };
-// defineProps(["movie"]);
+defineProps(['movie'])
 </script>
 
 <template>
@@ -34,31 +21,32 @@
             alt="the image"
           />
           <div class="action-buttons">
-            <Link
+            <RouterLink
+              v-if="movie.id"
               data-dismiss="modal"
               aria-label="Close"
-              :href="`/movie/${movie.id}`"
+              :to="{ name: 'details', params: { movie_id: movie.id } }"
               class="close detail-button"
-              >Details</Link
+              >Details</RouterLink
             >
           </div>
         </div>
         <div class="modal-body">
           <h1 class="modal-title f-5 fw-bold">
-            <!-- {{ movie.title }} -->
+            {{ movie.title }}
           </h1>
           <div class="small-detail">
             <p>
-              <!-- {{ movie.release_date }} -->
+              {{ movie.release_date }}
             </p>
             <div class="rating-container">
               <p>
                 <font-awesome-icon icon="fa-regular fa-star" />
-                <!-- {{ movie.vote_average }} -->
+                {{ movie.vote_average }}
               </p>
               <p>
                 <font-awesome-icon icon="fire" />
-                <!-- {{ movie.popularity }} -->
+                {{ movie.popularity }}
               </p>
             </div>
           </div>
