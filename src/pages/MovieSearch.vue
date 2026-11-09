@@ -40,7 +40,7 @@ const showmovie = (themovie) => {
 }
 
 watchEffect(() => {
-  document.title = query.value || 'Search'
+  document.title = `Movie Cluster - ${query.value || 'Search'}`
 })
 
 // refetch whenever the keyword, page or selected genres change

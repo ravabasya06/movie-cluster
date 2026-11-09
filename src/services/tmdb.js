@@ -1,16 +1,21 @@
 const BASE_URL = 'https://api.themoviedb.org/3'
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY
+const READ_TOKEN = import.meta.env.VITE_TMDB_READ_TOKEN
 
 async function request(path, params = {}) {
   const url = new URL(`${BASE_URL}${path}`)
 
-  Object.entries({ ...params, api_key: API_KEY }).forEach(([key, value]) => {
+  Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
       url.searchParams.set(key, value)
     }
   })
 
-  const response = await fetch(url)
+  const response = await fetch(url, {
+    headers: {
+      accept: 'application/json',
+      Authorization: `Bearer ${READ_TOKEN}`
+    }
+  })
   if (!response.ok) {
     throw new Error(`TMDB request failed (${response.status}): ${path}`)
   }

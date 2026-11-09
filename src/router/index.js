@@ -25,7 +25,7 @@ const router = createRouter({
 })
 
 router.afterEach((to) => {
-  if (to.meta.title) document.title = to.meta.title
+  if (to.meta.title) document.title = `Movie Cluster - ${to.meta.title}`
 })
 
 export default router
