@@ -1,19 +1,20 @@
 <script setup>
 import Search from './TheSearch.vue'
+import logo from '@/movclus.png'
 </script>
 
 <template>
   <nav class="navbar">
     <div class="left-group">
-      <a href="/">
-        <img class="logo" src="/src/movclus.png" alt="logo" />
-      </a>
+      <RouterLink to="/">
+        <img class="logo" :src="logo" alt="logo" />
+      </RouterLink>
     </div>
     <div class="right-group">
-      <a href="/search" class="genre-button">
+      <RouterLink to="/search" class="genre-button">
         <font-awesome-icon icon="folder-open" />
         Genres
-      </a>
+      </RouterLink>
       <Search />
     </div>
   </nav>

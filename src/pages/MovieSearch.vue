@@ -1,33 +1,70 @@
 <script setup>
-// import Layout from '../Components/Layout.vue'
-// import MovieModal from '../Components/Home/MovieModal.vue'
-// import Pagination from '../Components/Movie/Pagination.vue'
-// import GenreList from '../Components/Movie/GenreList.vue'
-// import { onMounted, ref } from 'vue'
+import { ref, computed, watch, watchEffect, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import Layout from '../components/TheLayout.vue'
+import MovieModal from '../components/Home/MovieModal.vue'
+import Pagination from '../components/Movie/PaginationBar.vue'
+import GenreList from '../components/Movie/GenreList.vue'
+import { getGenreList, discoverMovies, searchMovies } from '@/services/tmdb'
 
-// defineProps(['movies', 'query', 'genres', 'genrelist'])
+const route = useRoute()
 
-// let Movie
-// const selectedMovie = ref('')
-// const containerRef = ref(null)
+// state that used to come from the Laravel controller, now derived from the URL
+const query = computed(() => route.query.search_query || '')
+const page = computed(() => Number(route.query.page) || 1)
+const genres = computed(() =>
+  route.query.genres ? String(route.query.genres).split(',').map(Number) : []
+)
 
-// onMounted(() => {
-//   const MovieModalElement = document.getElementById('moviepopup')
-//   if (MovieModalElement) {
-//     Movie = new bootstrap.Modal(MovieModalElement)
-//   }
-// })
+const movies = ref(null)
+const genrelist = ref({ genres: [] })
+const error = ref(false)
 
-// const showmovie = (themovie) => {
-//   selectedMovie.value = themovie
-//   Movie.show()
-// }
+let Movie
+const selectedMovie = ref('')
+const containerRef = ref(null)
+
+onMounted(() => {
+  const MovieModalElement = document.getElementById('moviepopup')
+  if (MovieModalElement) {
+    Movie = new bootstrap.Modal(MovieModalElement)
+  }
+  getGenreList()
+    .then((data) => (genrelist.value = data))
+    .catch((e) => console.error('Error fetching genres:', e))
+})
+
+const showmovie = (themovie) => {
+  selectedMovie.value = themovie
+  Movie.show()
+}
+
+watchEffect(() => {
+  document.title = query.value || 'Search'
+})
+
+// refetch whenever the keyword, page or selected genres change
+watch(
+  () => [query.value, page.value, genres.value.join(',')],
+  async ([q, p, g]) => {
+    error.value = false
+    try {
+      movies.value = q
+        ? await searchMovies({ query: q, page: p })
+        : await discoverMovies({ page: p, genres: g })
+    } catch (e) {
+      console.error('Error fetching movies:', e)
+      error.value = true
+    }
+  },
+  { immediate: true }
+)
 </script>
 <template>
-  <Head :title="query ? query : 'Search'" />
   <Layout>
     <GenreList v-if="!query" :genrelist="genrelist" :selected_genre="genres" />
     <div class="search-container">
+      <p v-if="error">Could not load movies. Please try again later.</p>
       <h2>
         {{ query ? `Here are results for the keyword : ${query}` : '' }}
       </h2>
@@ -43,7 +80,7 @@
           </div>
         </div>
       </div>
-      <Pagination :movies="movies" :query="query" :genres="genres" />
+      <Pagination v-if="movies" :movies="movies" :query="query" :genres="genres" />
     </div>
     <MovieModal :movie="selectedMovie" />
   </Layout>

@@ -1,43 +1,87 @@
 <script setup>
+import { ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import Layout from '../components/TheLayout.vue'
 import MovieCarousel from '../components/Home/MovieCarousel.vue'
 import CastCarousel from '../components/Movie/CastCarousel.vue'
-defineProps(['movie', 'release_date', 'recommendation_movies', 'casts'])
+import { getMovie, getRecommendations, getCredits } from '@/services/tmdb'
+
+const route = useRoute()
+
+const movie = ref(null)
+const recommendation_movies = ref(null)
+const casts = ref([])
+const loading = ref(true)
+const error = ref(false)
+
+// e.g. "05 March 2024"
+const release_date = computed(() => {
+  if (!movie.value?.release_date) return ''
+  return new Date(movie.value.release_date).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC'
+  })
+})
+
+const certification = computed(
+  () =>
+    movie.value?.release_dates?.results?.find((result) => result.iso_3166_1 === 'US')
+      ?.release_dates[0]?.certification
+)
+
+// reload when navigating from one movie to another (e.g. via Recommendations)
+watch(
+  () => route.params.movie_id,
+  async (id) => {
+    if (!id) return
+    loading.value = true
+    error.value = false
+    try {
+      const [movieData, recommendations, credits] = await Promise.all([
+        getMovie(id),
+        getRecommendations(id),
+        getCredits(id)
+      ])
+      movie.value = movieData
+      recommendation_movies.value = recommendations
+      casts.value = (credits.cast ?? []).slice(0, 50)
+    } catch (e) {
+      console.error('Error fetching movie details:', e)
+      error.value = true
+    } finally {
+      loading.value = false
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
-  <Head title="Movie Details" />
   <Layout>
-    <div class="detail-page">
+    <p v-if="error" class="status-message">Could not load this movie. Please try again later.</p>
+    <div v-else-if="!loading && movie" class="detail-page">
       <div class="movie-page">
         <div class="movie-details">
           <div class="title">
             <h1>{{ movie.title }}</h1>
-            <h2
-              v-if="
-                movie.release_dates.results.find((result) => result.iso_3166_1 === 'US')
-                  ?.release_dates[0]?.certification
-              "
-              class="age-rate"
-            >
-              {{
-                movie.release_dates.results.find((result) => result.iso_3166_1 === 'US')
-                  .release_dates[0].certification
-              }}
+            <h2 v-if="certification" class="age-rate">
+              {{ certification }}
             </h2>
           </div>
           <div class="small-details">
             <p v-if="movie.tagline">{{ movie.tagline }}</p>
             <div class="genre-title-container">
-              <Link
+              <RouterLink
                 v-for="genre in movie.genres"
                 :key="genre.id"
-                :href="`/search?genres=${genre.id}`"
+                :to="{ name: 'search', query: { genres: genre.id } }"
               >
                 <span class="genre-title">
                   {{ genre.name }}
                 </span>
-              </Link>
+              </RouterLink>
             </div>
             <div class="rating">
               <p>
@@ -79,6 +123,10 @@ defineProps(['movie', 'release_date', 'recommendation_movies', 'casts'])
 </template>
 
 <style scoped>
+.status-message {
+  padding: 20px;
+}
+
 .detail-page {
   margin: 0;
   box-sizing: border-box;

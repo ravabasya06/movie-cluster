@@ -1,35 +1,26 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const isInputVisible = ref(false) // To control input visibility
 const query = ref('') // To store the search query
 
-// Function to toggle the search input visibility
 const toggleSearch = () => {
   isInputVisible.value = !isInputVisible.value
 }
 
-// Function to hide the input (for example, when clicking outside)
 const hideInput = () => {
   isInputVisible.value = false
 }
 
-// Function to perform the search (redirect to a search result page or handle within the same component)
 const search = () => {
-  if (query.value) {
-    // You can modify the behavior based on what you want to achieve:
-    // Redirecting to a new page with search results:
-    window.location.href = `/search?search_query=${query.value}`
-
-    // OR if you want to fetch and display results on the same page:
-    fetch(`/search?search_query=${query.value}`)
-      .then((response) => response.json())
-      .then((data) => {
-        // Handle the search results
-        console.log(data)
-      })
+  const keyword = query.value.trim()
+  if (keyword) {
+    router.push({ name: 'search', query: { search_query: keyword } })
   } else {
-    window.location.href = '/search' // Go to the home page if the query is empty
+    router.push({ name: 'home' })
   }
 }
 </script>

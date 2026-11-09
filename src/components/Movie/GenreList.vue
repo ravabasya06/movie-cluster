@@ -1,41 +1,31 @@
 <script setup>
-// import { useForm, router } from "@inertiajs/vue3";
-// const props = defineProps(["genrelist", "selected_genre"]);
-// function myFunction() {
-//     const isChecked = document.getElementById("myCheck");
-//     const genre = document.getElementById("genre");
-//     if (isChecked.checked == true) {
-//         genre.backgroundColor = "white";
-//     } else {
-//         genre.backgroundColor = "none";
-//     }
-// }
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-// const form = useForm({
-//     genres: [],
-// });
+const props = defineProps(['genrelist', 'selected_genre'])
+const router = useRouter()
 
-// const search = () => {
-//     if (form.genres.length > 0) {
-//         form.genres = form.genres.join();
-//         form.get(route("search"));
-//     } else {
-//         router.visit("/search");
-//     }
-// };
+// start from the genres already in the URL so the checkboxes stay ticked
+const selectedGenres = ref([...(props.selected_genre ?? [])])
 
-// const isSelected = (genre) => {
-//     return form.genres.includes(genre);
-// };
+const search = () => {
+  if (selectedGenres.value.length > 0) {
+    router.push({ name: 'search', query: { genres: selectedGenres.value.join(',') } })
+  } else {
+    router.push({ name: 'search' })
+  }
+}
 
-// const toggleGenre = (genre) => {
-//     const index = form.genres.indexOf(genre);
-//     if (index === -1) {
-//         form.genres.push(genre);
-//     } else {
-//         form.genres.splice(index, 1);
-//     }
-// };
+const isSelected = (genre) => selectedGenres.value.includes(genre)
+
+const toggleGenre = (genre) => {
+  const index = selectedGenres.value.indexOf(genre)
+  if (index === -1) {
+    selectedGenres.value.push(genre)
+  } else {
+    selectedGenres.value.splice(index, 1)
+  }
+}
 </script>
 
 <template>

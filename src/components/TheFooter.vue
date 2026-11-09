@@ -1,7 +1,11 @@
+<script setup>
+import logo from '@/movclus.png'
+</script>
+
 <template>
   <div class="footer">
     <div class="footer-box">
-      <img class="logo" src="/src/movclus.png" alt="logo" />
+      <img class="logo" :src="logo" alt="logo" />
       <p>
         Movie Cluster is a Movie Database made for a project to learn how API works with the help of
         TMDB's Open API in which you can find the source on the link down below

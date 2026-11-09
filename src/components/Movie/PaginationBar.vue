@@ -1,87 +1,64 @@
 <script setup>
-// import { computed } from "vue";
+import { computed } from 'vue'
 
-// // Props
-// const props = defineProps(["movies", "query", "genres"]);
+const props = defineProps(['movies', 'query', 'genres'])
 
-// // Variables
-// const currentPage = props.movies.page;
-// const totalPages = props.movies.total_pages;
+const currentPage = computed(() => props.movies.page)
+const totalPages = computed(() => props.movies.total_pages)
 
-// // Number of pages to show around the current page
-// const pageNeighbors = 2;
+// Number of pages to show around the current page
+const pageNeighbors = 2
 
-// // Computed properties to control pagination
-// const pageRange = computed(() => {
-//     const startPage = Math.max(1, currentPage - pageNeighbors);
-//     const endPage = Math.min(totalPages, currentPage + pageNeighbors);
-//     const range = [];
+const pageRange = computed(() => {
+  const startPage = Math.max(1, currentPage.value - pageNeighbors)
+  const endPage = Math.min(totalPages.value, currentPage.value + pageNeighbors)
+  const range = []
 
-//     for (let i = startPage; i <= endPage; i++) {
-//         range.push(i);
-//     }
+  for (let i = startPage; i <= endPage; i++) {
+    range.push(i)
+  }
 
-//     return range;
-// });
+  return range
+})
 
-// const shouldShowFirst = computed(() => currentPage > pageNeighbors + 1);
-// const shouldShowLeftEllipsis = computed(() => currentPage > pageNeighbors + 2);
-// const shouldShowRightEllipsis = computed(
-//     () => currentPage < totalPages - pageNeighbors - 1,
-// );
-// const shouldShowLast = computed(() => currentPage < totalPages - pageNeighbors);
-//
+const shouldShowFirst = computed(() => currentPage.value > pageNeighbors + 1)
+const shouldShowLeftEllipsis = computed(() => currentPage.value > pageNeighbors + 2)
+const shouldShowRightEllipsis = computed(
+  () => currentPage.value < totalPages.value - pageNeighbors - 1
+)
+const shouldShowLast = computed(() => currentPage.value < totalPages.value - pageNeighbors)
+
+// link to a page of the current search (keyword search or genre browse)
+const pageLink = (page) => {
+  const query = { page }
+  if (props.query) {
+    query.search_query = props.query
+  } else if (props.genres?.length) {
+    query.genres = props.genres.join(',')
+  }
+  return { name: 'search', query }
+}
 </script>
 <template>
   <div class="page">
-    <Link
-      v-if="currentPage > 1"
-      :href="
-        query
-          ? `/search?page=${currentPage - 1}&search_query=${query}`
-          : `/search?page=${currentPage - 1}&genres=${genres}`
-      "
-      >Previous</Link
-    >
-    <Link
-      v-if="shouldShowFirst"
-      :href="query ? `/search?page=1&search_query=${query}` : `/search?page=1&genres=${genres}`"
-    >
+    <RouterLink v-if="currentPage > 1" :to="pageLink(currentPage - 1)">Previous</RouterLink>
+    <RouterLink v-if="shouldShowFirst" :to="pageLink(1)">
       <span>1</span>
-    </Link>
+    </RouterLink>
     <span v-if="shouldShowLeftEllipsis">...</span>
-    <Link
+    <RouterLink
       v-for="page in pageRange"
       :key="page"
-      :href="
-        query
-          ? `/search?page=${page}&search_query=${query}`
-          : `/search?page=${page}&genres=${genres}`
-      "
+      :to="pageLink(page)"
       :class="{ active: page === currentPage }"
     >
       <span>{{ page }}</span>
-    </Link>
+    </RouterLink>
     <span v-if="shouldShowRightEllipsis">...</span>
-    <Link
-      v-if="shouldShowLast"
-      :href="
-        query
-          ? `/search?page=${totalPages}&search_query=${query}`
-          : `/search?page=${totalPages}&genres=${genres}`
-      "
-    >
+    <RouterLink v-if="shouldShowLast" :to="pageLink(totalPages)">
       <span>{{ totalPages }}</span>
-    </Link>
-    <Link
-      v-if="currentPage < totalPages"
-      :href="
-        query
-          ? `/search?page=${currentPage + 1}&search_query=${query}`
-          : `/search?page=${currentPage + 1}&genres=${genres}`
-      "
-      >Next</Link
-    >
+    </RouterLink>
+    <RouterLink v-if="currentPage < totalPages" :to="pageLink(currentPage + 1)">Next</RouterLink>
   </div>
 </template>
 
